@@ -2,9 +2,10 @@ import socket
 
 
 s = socket.socket()
-#https连接如下：
-#import ssl
-#s = ssl.wrap_socket(socket.socket())
+
+# https连接如下：
+# import ssl
+# s = ssl.wrap_socket(socket.socket())
 host = 'www.harmontronics.com'
 port = 80
 s.connect((host, port))
