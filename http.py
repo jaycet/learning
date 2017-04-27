@@ -11,7 +11,7 @@ while True:
     buffer_size = 1000
     r = b''
     while True:
-        request = connection.recv(buffer_size)
+        request += connection.recv(buffer_size)
         if len(request) < buffer_size:
             break
     response = b'HTTP/1.1 200 very ok\r\n\r\n<h1>hello world<h1>'
