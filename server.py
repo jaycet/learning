@@ -1,12 +1,22 @@
 from utils.log import log
 import socket
+import urllib
+from routes import route_dict
 
 
-def route_index():
-    header = b'HTTP/1.1 200 ok\r\nContent-Type: text/html\r\n'
-    body = b'<h1>hello world</h1><img src="/doge.gif"/>'
-    r = header + b'\r\n' + body
-    return r
+class Request():
+    def __init__(self):
+        self.method = 'GET'
+        self.path = ''
+        self.query = {}
+        self.body = ''
+
+    def form(self):
+        body = urllib.parse.unquote(self.body)
+        args = {}
+
+
+request = Request()
 
 
 def route_image():
@@ -24,9 +34,9 @@ def error(code=404):
 
 def response_for_path(path):
     r = {
-        '/': route_index,
-        '/doge.gif': route_image,
+
     }
+    r.update(route_dict)
     response = r.get(path, error)
     return response()
 
@@ -37,11 +47,19 @@ def run(host='', port=3000):
         while True:
             s.listen(5)
             connection, address = s.accept()
-            request = connection.recv(1024)
-            request = request.decode('utf-8')
+            buffer_size = 1000
+            r = b''
+            while True:
+                recv = connection.recv(buffer_size)
+                r += recv
+                if len(recv) < buffer_size:
+                    break
+            r = r.decode('utf-8')
             log('ip and request, {} \n{}'.format(address, request))
             try:
-                path = request.split()[1]
+                path = r.split()[1]
+                request.method = r.split()[0]
+                request.body = r.split('\r\n\r\n', 1)[1]
                 response = response_for_path(path)
                 connection.sendall(response)
             except Exception as e:
