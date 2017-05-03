@@ -13,7 +13,12 @@ class Request():
 
     def form(self):
         body = urllib.parse.unquote(self.body)
-        args = {}
+        args = body.split('&')
+        f = {}
+        for arg in args:
+            k,  v = arg.split('=')
+            f[k] = v
+        return f
 
 
 request = Request()
@@ -21,7 +26,7 @@ request = Request()
 
 def route_image():
     header = b'HTTP/1.1 200 ok\r\nContent-Type: image/gif\r\n'
-    with open('doge.gif', 'rb') as f:
+    with open('static/doge.gif', 'rb') as f:
         return header + b'\r\n' + f.read()
 
 
@@ -34,7 +39,7 @@ def error(code=404):
 
 def response_for_path(path):
     r = {
-
+        '/doge.gif': route_image
     }
     r.update(route_dict)
     response = r.get(path, error)
