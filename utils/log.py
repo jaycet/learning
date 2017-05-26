@@ -11,7 +11,8 @@ def format_datetime():
 
 def log(*args, **kwargs):
     t = format_datetime()
-    return print(t, *args, **kwargs)
+    with open('log.txt', 'a+') as f:
+        print(t, *args, **kwargs, file=f)
 
 if __name__ == '__main__':
-    log(1)
+    log('12345')
